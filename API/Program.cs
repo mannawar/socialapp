@@ -1,15 +1,17 @@
+using System.Text;
 using API.Data;
+using API.Extensions;
+using API.Interfaces;
+using API.services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
- 
+using Microsoft.IdentityModel.Tokens;
+
 var policyName = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<DataContext>(options => 
-{
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
-
+builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: policyName, 
@@ -24,9 +26,12 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
+builder.Services.AddIdentityServices(builder.Configuration);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+
+// builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -40,6 +45,8 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 
 app.UseCors(policyName);
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
