@@ -1,0 +1,15 @@
+<h4>Internal Server error- Refereshing the page will make error disappear!</h4>
+<ng-container *ngIf="error">
+    <h5 class="text-danger">{{error.message}}</h5>
+    <p class="font-weight-bold">If you are seeing this then probably Angular is not to blame!</p>
+    <p>What to do next?</p>
+    <ol>
+        <li>Open the chrome dev tool</li>
+        <li>Inspect network tab</li>
+        <li>Check the failing request</li>
+        <li>Examine the request URL- make sure it is correct</li>
+        <li>Reproduce the same error in postman- if we see the same issue then the issue in not in front End!</li>
+    </ol>
+    <p>Following is the stack trace- this where your investigation should start!</p>
+    <code class="mt-5" style="color: red;">{{error.details}}</code>
+</ng-container>
