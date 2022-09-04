@@ -13,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: policyName, 
@@ -26,18 +27,34 @@ builder.Services.AddCors(options =>
                     });
 });
 
-builder.Services.AddControllers();
 builder.Services.AddIdentityServices(builder.Configuration);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
+// builder.Services.AddEndpointsApiExplorer();
 
-
-// builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionMiddleware>();
+
+app.UseHttpsRedirection();
+
+app.UseCors(policyName);
+
+app.UseAuthentication();
+
+app.UseAuthorization();
+
+app.UseDefaultFiles();
+
+app.UseStaticFiles();
+
+app.MapControllers();
+
+// app.MapFallbackToController("Index", "Fallback");
+
 // seeding of data before the appliaction starts
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
 
@@ -53,16 +70,4 @@ catch(Exception ex)
     logger.LogError(ex, "An error occured during migration!");
 }
 
-app.UseMiddleware<ExceptionMiddleware>();
-
-app.UseHttpsRedirection();
-
-app.UseCors(policyName);
-
-app.UseAuthentication();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+await app.RunAsync();
