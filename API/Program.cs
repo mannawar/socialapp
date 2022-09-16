@@ -5,6 +5,7 @@ using API.Extensions;
 using API.Interfaces;
 using API.Middleware;
 using API.services;
+using API.SignalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -28,8 +29,8 @@ builder.Services.AddCors(options =>
                         .WithOrigins("https://localhost:4200", "http://localhost:4200");
                     });
 });
-
 builder.Services.AddIdentityServices(builder.Configuration);
+builder.Services.AddSignalR();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 // builder.Services.AddEndpointsApiExplorer();
 
@@ -51,6 +52,9 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.MapControllers();
+
+app.MapHub<PresenceHub>("hubs/presence");
+app.MapHub<MessageHub>("hubs/message");
 
 // app.MapFallbackToController("Index", "Fallback");
 
